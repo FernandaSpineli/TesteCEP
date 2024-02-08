@@ -11,8 +11,6 @@ class SupportController extends Controller
     public function index(Support $support)
     {
         $supports = $support->all();
-        dd($supports);
-
 
         return view('admin/supports/index', compact('supports'));
     }
@@ -22,8 +20,22 @@ class SupportController extends Controller
         return view('admin/supports/create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Support $support)
     {
-       dd($request); 
+       $data = $request->all(); 
+       $data['status'] = 'a';
+
+        $support->create($data);
+
+       return redirect()->route('supports.index');
+    }
+
+    public function show(string|int $id)
+    {
+        if(!$support = Support::find($id))
+        {
+            return redirect()->back();
+        }
+        return view('admin/supports/show', compact('$support'));
     }
 }
