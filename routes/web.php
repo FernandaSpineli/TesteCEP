@@ -1,8 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\{SupportController};
+use App\Http\Controllers\Estudos\ArrayController;
 use App\Http\Controllers\Site\SiteController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Address\AddressController;
+
+Route::get('/addresses/{cep}', [AddressController::class, 'getOrCreate'])->name('addresses.show');
+Route::get('addresses', [AddressController::class, 'getAll'])->name('addresses.list');
+
+
+Route::get('/arrays', [ArrayController::class, 'simpleArray'])->name('arrays.index');
+
 
 Route::delete('/supports/{id}', [SupportController::class, 'destroy'])->name('supports.destroy');
 Route::put('/supports/{id}', [SupportController::class, 'update'])->name('supports.update');
