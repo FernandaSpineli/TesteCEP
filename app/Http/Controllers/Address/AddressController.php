@@ -16,13 +16,13 @@ class AddressController extends Controller
     
     public function getAll(Request $request)
     {
-        $addresses = $this->service->paginate(
+        $addresses = $this->service->updateAddresses();
+        /* $addresses = $this->service->paginate(
             page: $request->get('page', 1),
             totalPerPage: $request->get('per_page', 10),
             filter: $request->filter
         );
-
-        return view('address/list', compact('addresses'));
+        return view('address/list', compact('addresses')); */
     }
 
     public function getOrCreate(string $cep)
@@ -31,7 +31,7 @@ class AddressController extends Controller
         {
             $address = $this->service->getOrCreate($cep);
 
-            return view('address/show', compact('$address'));
+            return view('address/show', compact('address'));
         }
     }
 

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Traits\TraitAddress;
+use App\Services\AddressService;
 
 class AddressCommand extends Command
 {
