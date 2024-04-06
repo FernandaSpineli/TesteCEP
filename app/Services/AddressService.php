@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\CreateSupportDTO;
 use stdClass;
 use App\DTO\CreateAddressDTO;
 use App\Repositories\AddressRepositoryInterface;
@@ -26,10 +27,7 @@ class AddressService
 
         if($address == null)
         {
-            $client = new \GuzzleHttp\Client();
-            $request = $client->get("https://viacep.com.br/ws/{$cep}/json/");
-            $response = $request->getBody();
-            $body = json_decode($response, true);
+            $body = $this->callViaCep($cep);
             $address = $this->new(new CreateAddressDTO(
                 $body['cep'], 
                 $body['logradouro'],
@@ -43,6 +41,14 @@ class AddressService
         }
 
         return $address;
+    }
+
+    public function callViaCep(string $cep) 
+    {
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get("https://viacep.com.br/ws/{$cep}/json/");
+        $response = $request->getBody();
+        return json_decode($response, true);
     }
 
     public function getByCep(string $cep): stdClass|null
@@ -64,40 +70,64 @@ class AddressService
         return $this->repository->new($dto); 
     }
 
+    public function getAll(): array
+    {
+        return $this->repository->getAll();
+    }
+
     public function updateAddresses()
     {
 
-        $addressesPagineted = $this->paginate(
-            page: 1,
-            totalPerPage: 2,
-            filter: null
-        );
-        /* $currentPage = $addressesPagineted->currentPage();
-        $lastPage = $addressesPagineted->lastPage(); */
-        $a = $addressesPagineted->currentPage();
-        do {
+        $addresses = $this->getAll();
+
+        for ($i=0; $i < count($addresses); $i++) { 
+            $localAddress = $addresses[$i];
+            $viaCepAddress = $this->callViaCep($localAddress['cep']);
             
-            $addressesPagineted = $this->paginate(page: $a,
-            totalPerPage: 2,
-            filter: null);
-            $a =+ 1;
-        } while (!$addressesPagineted->isLastPage());
-        dd($a);
+            $addressChanged = $this->hasChange($localAddress, $viaCepAddress);
 
+            if ($addressChanged) {
+                $this->update(new CreateAddressDTO(
+                    $viaCepAddress['cep'], 
+                    $viaCepAddress['logradouro'],
+                    $viaCepAddress['complemento'],
+                    $viaCepAddress['bairro'],
+                    $viaCepAddress['localidade'],
+                    $viaCepAddress['uf'],
+                    $viaCepAddress['ddd'])
+                );
+            }
+        }
+    }
 
-        dd($addressesPagineted);
-        // for ($i=0; $i < $page; $i++) { 
-        //     if($addressesPagineted->isLastPage())
-        //     {
-        //        break;
-        //     }
-        // }
-        
-        // chamar o metodo paginate dentro de um for para mudar as paginas
-        //dentro do for fazer outro for para acessar endereço por endereço
-        // buscar no via cep o endereço 
-        // outro for para analisar campo por campo comparando endereço do db e do via cep
+    public function update(CreateAddressDTO $dto)
+    {
+        $this->repository->update($dto);
+    }
 
+    public function hasChange($localAddress, $viaCepAddress) {
+        $hasChange = ($localAddress['cep'] == $viaCepAddress['cep']) ? false : true;
+        if ($hasChange) return true;
+
+        $hasChange = ($localAddress['logradouro'] == $viaCepAddress['logradouro']) ? false : true;
+        if ($hasChange) return true;
+
+        $hasChange = ($localAddress['complemento'] == $viaCepAddress['complemento']) ? false : true;
+        if ($hasChange) return true;
+
+        $hasChange = ($localAddress['bairro'] == $viaCepAddress['bairro']) ? false : true;
+        if ($hasChange) return true;
+
+        $hasChange = ($localAddress['localidade'] == $viaCepAddress['localidade']) ? false : true;
+        if ($hasChange) return true;
+
+        $hasChange = ($localAddress['uf'] == $viaCepAddress['uf']) ? false : true;
+        if ($hasChange) return true;
+
+        $hasChange = ($localAddress['ddd'] == $viaCepAddress['ddd']) ? false : true;
+        if ($hasChange) return true;
+
+        return false;
 
     }
 

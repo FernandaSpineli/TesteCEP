@@ -1,5 +1,7 @@
 <h1>Listagem dos endereços</h1>
 
+<x-alert/>
+
 <table>
     <thead>
             <th>Cep</th>
@@ -25,3 +27,5 @@
         @endforeach
     </tbody>
 </table>
+
+<x-pagination :paginator="$addresses" />

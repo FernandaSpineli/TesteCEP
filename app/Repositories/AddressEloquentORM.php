@@ -29,10 +29,12 @@ class AddressEloquentORM implements AddressRepositoryInterface
 
     public function findOne(string $cep): stdClass|null
     {
-        $address = $this->model->find($cep);
+        $newCep = $this->buildCep($cep);
+        $address = $this->model->where('cep', $newCep)->first();
         if(!$address){
             return $address;
         }
+        
         return (object) $address->toArray();
     }
 
@@ -41,5 +43,29 @@ class AddressEloquentORM implements AddressRepositoryInterface
         $address = $this->model->create( (array) $dto);
 
         return (object) $address->toArray();
+    }
+
+    public function getAll(): array
+    {
+        return $this->model
+                    ->get()
+                    ->toArray();
+    }
+
+    public function buildCep(string $cep): string
+    {
+        $part1 = substr($cep, 0, 5); 
+        $part2 = substr($cep, 5);    
+        $newCep = $part1 . '-' . $part2;
+        return $newCep;
+    }
+
+    public function update(CreateAddressDTO $dto)
+    {
+        $address = $this->model->where('cep', $dto->cep)->first();
+        if ($address == null) {
+            return null;
+        }
+        $address->update( (array) $dto);
     }
 }
