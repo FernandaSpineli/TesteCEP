@@ -7,12 +7,20 @@ use App\Services\AddressService;
 
 class AddressCommand extends Command
 {
+    protected $addressService;
+
+    public function __construct(AddressService $addressService)
+    {
+        parent::__construct();
+        $this->addressService = $addressService;
+    }
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:update-addresses';
+    protected $signature = "app:update-addresses";
 
     /**
      * The console command description.
@@ -26,6 +34,7 @@ class AddressCommand extends Command
      */
     public function handle()
     {
-        $this->updateAddresses();
+        $this->addressService->updateAddresses();
     }
+    
 }
