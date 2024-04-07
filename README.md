@@ -1,11 +1,9 @@
 
-# Setup Docker Laravel 10 com PHP 8.1
-[Assine a Academy, e Seja VIP!](https://academy.especializati.com.br)
 
 ### Passo a passo
 Clone Repositório
 ```sh
-git clone -b laravel-10-com-php-8.1 https://github.com/especializati/setup-docker-laravel.git app-laravel
+git clone -b laravel-10-com-php-8.1 https://github.com/FernandaSpineli/TesteCEP.git
 ```
 ```sh
 cd app-laravel
@@ -64,5 +62,8 @@ php artisan key:generate
 ```
 
 
-Acesse o projeto
-[http://localhost:8989](http://localhost:8989)
+URL para acessar a listagem de endereços
+[http://localhost:8989/addresses](http://localhost:8989/addresses)
+
+URL para buscar um endereço por CEP
+[http://localhost:8989/addresses/11111111](http://localhost:8989/addresses/11111111)
