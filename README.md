@@ -61,6 +61,11 @@ Gere a key do projeto Laravel
 php artisan key:generate
 ```
 
+Roda as migrations para ter as tabelas no banco
+```sh
+php artisan migrate
+```
+
 
 URL para acessar a listagem de endereços
 [http://localhost:8989/addresses](http://localhost:8989/addresses)
